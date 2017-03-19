@@ -3,7 +3,7 @@
 # Given an array of int A, return B such that
 # B[i] = A[j], j is the earliest value where j > i and A[i] >= A[j].
 # e.g. A = [5, 4, 6] -> B[0] = A[1] = 4.
-# A DP-like solution that identifies B[i] = B[i+1] | B[i+2] | A[i+1] | 0.
+# A DP-like solution that identifies B[i] = B[i+1] | A[i+1] | 0.
 # Takes O(n) time (and O(n) space to simply create the array returned).
 def earliest_lesser(A) -> "array of int":
     B = [0] * len(A)
@@ -17,9 +17,6 @@ def earliest_lesser(A) -> "array of int":
         elif A[i] > B[i+1]:
             # Otherwise, if the best element comes from past i+1.
             B[i] = B[i+1]
-        elif i <= len(A)-3 and A[i] > B[i+2]:
-            # Or the best element comes from past i+2.
-            B[i] = B[i+2]
         else:
             # Otherwise, we've proven there is no element to the right that is lesser than our current.
             B[i] = 0
