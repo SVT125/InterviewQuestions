@@ -1,4 +1,17 @@
-
+# 0-1 Knapsack Problem w/ the famous O(nW) time but using only O(W) space; n = # of items, W = max weight.
+# A is a list of tuples (weight, value), W is a non-negative integer representing max weight.
+# We let the partial array be size W+1, since we index the items with 1-indexing -> 0th index is the case.
+# Returns the max value attainable of A given W.
+def knapsack(A, W) -> int:
+    partial_results = [0] * (W+1)
+    for i in range(0, len(A)):
+        for j in range(W, 0, -1):
+            # Update right to left, since we don't want to use new values from earlier in the array for the later part.
+            # If we can add the ith item + its better to take its value, add it on.
+            # In all other cases given this 1D array implementation, do nothing as we already have the best value.
+            if A[i][0] <= j and partial_results[j - A[i][0]] + A[i][1] > partial_results[j]:
+                partial_results[j] = partial_results[j - A[i][0]] + A[i][1]
+    return partial_results[W]
 
 # Given an array of int A, return B such that
 # B[i] = A[j], j is the earliest value where j > i and A[i] >= A[j].
@@ -79,12 +92,14 @@ def bbb(phrase, dict) -> "array of int":
 
     return last_word_length
 
+ks_items = [(2, 3), (3, 4), (4, 5), (5, 6)]
 el = [5, 1, 3, 4, 6, 2]
 pp_s = ['aaa', 'bbb', 'c', 'd', 'ee', 'ff', 'ggggggg']
 bbb_d = ['a', 'am', 'an', 'man', 'plan', 'canal']
 bbb_str = "amanaplanacanal"
 pp_length = 11
 
+print(knapsack(ks_items, 5))
 print(earliest_lesser(el))
 print(pretty_printing(pp_s, pp_length))
 print(bbb(bbb_str, bbb_d))
