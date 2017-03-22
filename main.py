@@ -1,3 +1,6 @@
+from functools import reduce
+
+
 # 0-1 Knapsack Problem w/ the famous O(nW) time but using only O(W) space; n = # of items, W = max weight.
 # A is a list of tuples (weight, value), W is a non-negative integer representing max weight.
 # We let the partial array be size W+1, since we index the items with 1-indexing -> 0th index is the case.
@@ -12,6 +15,7 @@ def knapsack(A, W) -> int:
             if A[i][0] <= j and partial_results[j - A[i][0]] + A[i][1] > partial_results[j]:
                 partial_results[j] = partial_results[j - A[i][0]] + A[i][1]
     return partial_results[W]
+
 
 # Given an array of int A, return B such that
 # B[i] = A[j], j is the earliest value where j > i and A[i] >= A[j].
@@ -34,6 +38,35 @@ def earliest_lesser(A) -> "array of int":
             # Otherwise, we've proven there is no element to the right that is lesser than our current.
             B[i] = 0
     return B
+
+
+# EPI Page 184, Find the duplicate and missing elements.
+# Given an array of ints in the range [0, n-1], return the duplicate and missing elements.
+# That is, if the array is perfect it is exactly [0, n-1] w/ no duplicates.
+# If it isn't, the duplicated element takes the slot of what is now the missing element.
+# Returns a tuple of int (duplicate, missing).
+def find_dupe_and_missing(A) -> "tuple of int":
+    B = [i for i in range(0, len(A))]
+    C = A + B
+    xored_answers = reduce(lambda x, y: x ^ y, C)
+    differing_bit = xored_answers & ~(xored_answers - 1)
+
+    # If the result is 0, then there were no duplicate/missing elements.
+    if differing_bit == 0:
+        return (-1, -1)
+
+    unknown_answer = reduce(lambda x, y: x ^ y, [x for x in C if x & differing_bit])
+    duplicate = -1
+
+    # Traverse the whole array to find our unknown answer - if we've found it, we know it's not the missing element.
+    for x in A:
+        if x == unknown_answer:
+            duplicate = unknown_answer
+            break
+
+    if duplicate == -1:
+        return (xored_answers ^ unknown_answer, unknown_answer)
+    return (duplicate, xored_answers ^ duplicate)
 
 
 # EPI Page 295, The Pretty Printing Problem.
@@ -94,6 +127,7 @@ def bbb(phrase, dict) -> "array of int":
 
 ks_items = [(2, 3), (3, 4), (4, 5), (5, 6)]
 el = [5, 1, 3, 4, 6, 2]
+mm_array = [0, 1, 3, 2, 6, 4, 7, 1]
 pp_s = ['aaa', 'bbb', 'c', 'd', 'ee', 'ff', 'ggggggg']
 bbb_d = ['a', 'am', 'an', 'man', 'plan', 'canal']
 bbb_str = "amanaplanacanal"
@@ -101,5 +135,6 @@ pp_length = 11
 
 print(knapsack(ks_items, 5))
 print(earliest_lesser(el))
+print(find_dupe_and_missing(mm_array))
 print(pretty_printing(pp_s, pp_length))
 print(bbb(bbb_str, bbb_d))
